@@ -30,11 +30,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		0CF0A8F730AF1511000276DA /* Activity Planner */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Activity Planner";
-			sourceTree = "<group>";
-		};
 		0CF0A90530AF1513000276DA /* Activity PlannerTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Activity PlannerTests";
@@ -43,6 +38,11 @@
 		0CF0A90F30AF1513000276DA /* Activity PlannerUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Activity PlannerUITests";
+			sourceTree = "<group>";
+		};
+		0CF0A95D30AF22F1000276DA /* Activity Planner */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Activity Planner";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,7 +69,7 @@
 		0CF0A8EC30AF1511000276DA = {
 			isa = PBXGroup;
 			children = (
-				0CF0A8F730AF1511000276DA /* Activity Planner */,
+				0CF0A95D30AF22F1000276DA /* Activity Planner */,
 				0CF0A90530AF1513000276DA /* Activity PlannerTests */,
 				0CF0A90F30AF1513000276DA /* Activity PlannerUITests */,
 				0CF0A8F630AF1511000276DA /* Products */,
@@ -100,7 +100,7 @@
 			buildRules = (
 			);
 			fileSystemSynchronizedGroups = (
-				0CF0A8F730AF1511000276DA /* Activity Planner */,
+				0CF0A95D30AF22F1000276DA /* Activity Planner */,
 			);
 			name = "Activity Planner";
 			productName = "Activity Planner";
@@ -397,7 +397,7 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 27.0;
 			};
@@ -441,7 +441,7 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
 				XROS_DEPLOYMENT_TARGET = 27.0;
 			};
