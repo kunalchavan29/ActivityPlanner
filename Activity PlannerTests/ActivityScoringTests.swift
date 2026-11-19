@@ -1,6 +1,6 @@
 //
 //  ActivityScoringTests.swift
-//  AppCast
+//  Activity Planner
 //
 //  Created by Kunal on 19/11/26.
 //
