@@ -9,7 +9,7 @@
 
 import Foundation
 
-struct City: Identifiable, Codable, Hashable, Sendable {
+nonisolated struct City: Identifiable, Codable, Hashable, Sendable {
 
     let id: Int
     let name: String

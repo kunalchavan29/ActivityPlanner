@@ -6,7 +6,7 @@
 //
 import Foundation
 
-struct ActivityScore: Identifiable, Hashable, Sendable {
+nonisolated struct ActivityScore: Identifiable, Hashable, Sendable {
     let activity: Activity
     let date: Date
     let score: Int

@@ -6,7 +6,7 @@
 //
 import Foundation
 
-enum Activity: String, CaseIterable, Identifiable, Sendable {
+nonisolated enum Activity: String, CaseIterable, Identifiable, Sendable {
 
     case skiing
     case surfing

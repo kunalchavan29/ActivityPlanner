@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct DailyForecast: Identifiable, Hashable, Sendable {
+nonisolated struct DailyForecast: Identifiable, Hashable, Sendable {
 
     let date: Date
 
