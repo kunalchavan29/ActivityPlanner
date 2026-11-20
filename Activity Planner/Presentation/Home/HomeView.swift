@@ -4,9 +4,6 @@
 //
 //  Created by Kunal on 20/11/26.
 //
-
-
-
 import SwiftUI
 
 struct HomeView: View {
@@ -16,36 +13,57 @@ struct HomeView: View {
 
     private let forecastService: any ForecastProviding
 
-    init(citySearchService: any CitySearching, forecastService: any ForecastProviding, recentSearchStore: any RecentSearchStoring) {
+    init(
+        citySearchService: any CitySearching,
+        forecastService: any ForecastProviding,
+        recentSearchStore: any RecentSearchStoring
+    ) {
         self.forecastService = forecastService
-        _viewModel = State(initialValue: HomeViewModel(citySearchService: citySearchService, recentSearchStore: recentSearchStore))
+
+        _viewModel = State(
+            initialValue: HomeViewModel(
+                citySearchService: citySearchService,
+                recentSearchStore: recentSearchStore
+            )
+        )
     }
 
     private var searchViewModel: CitySearchViewModel {
         viewModel.searchViewModel
     }
 
+    private var hasSearchQuery: Bool {
+        !searchViewModel.query
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .isEmpty
+    }
+
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-
-                    header
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 24) {
+                    HomeHeroView()
 
                     searchBar
+                        .padding(.horizontal, 20)
+                        .padding(.top, -48)
+                        .padding(.bottom, -48)
 
-                    if searchViewModel.query
-                        .trimmingCharacters(in: .whitespacesAndNewlines)
-                        .isEmpty {
-                        recentSearchesSection
-                    } else {
+                    if hasSearchQuery {
                         searchResultsSection
+                            .padding(.horizontal, 20)
+                    } else {
+                        recentSearchesSection
+                            .padding(.horizontal, 20)
+
+                        HomeWelcomeView()
                     }
                 }
-                .padding()
+                .padding(.bottom, 32)
             }
-            .navigationTitle("ActiviyPlanner")
-            .navigationBarTitleDisplayMode(.large)
+            .background(ActivityPlannerStyle.screenBackground)
+            .ignoresSafeArea(edges: .top)
+            .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: City.self) { city in
                 ActivityForecastView(
                     city: city,
@@ -59,185 +77,122 @@ struct HomeView: View {
                 searchViewModel.cancelSearch()
             }
         }
-    }
-
-    // MARK: - Header
-
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Plan your next adventure")
-                .font(.title2)
-                .fontWeight(.bold)
-
-            Text("Find the best days for outdoor and indoor activities.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .tint(ActivityPlannerStyle.accent)
     }
 
     // MARK: - Search Bar
 
     private var searchBar: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
-
-            TextField(
-                "Search city or town",
-                text: Binding(
-                    get: { searchViewModel.query },
-                    set: { searchViewModel.updateQuery($0) }
-                )
+        ActivityPlannerSearchBar(
+            query: Binding(
+                get: { searchViewModel.query },
+                set: { searchViewModel.updateQuery($0) }
             )
-            .autocorrectionDisabled()
-            .textInputAutocapitalization(.words)
-
-            if !searchViewModel.query.isEmpty {
-                Button {
-                    searchViewModel.updateQuery("")
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
-                }
-                .accessibilityLabel("Clear search")
-            }
-        }
-        .padding(14)
-        .background(Color(uiColor: .secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        )
     }
 
     // MARK: - Recent Searches
+
     @ViewBuilder
     private var recentSearchesSection: some View {
         if !viewModel.recentSearches.isEmpty {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    Text("Recent searches")
-                        .font(.headline)
-
-                    Spacer()
-
-                    Button("Clear") {
-                        Task {
-                            await viewModel.clearRecentSearches()
-                        }
+            VStack(spacing: 16) {
+                ActivityPlannerSectionHeader(
+                    title: "Recent searches",
+                    symbol: "clock.arrow.circlepath",
+                    actionTitle: "Clear"
+                ) {
+                    Task {
+                        await viewModel.clearRecentSearches()
                     }
-                    .font(.subheadline)
                 }
 
                 VStack(spacing: 0) {
-                    ForEach(viewModel.recentSearches) { city in
+                    ForEach(
+                        Array(viewModel.recentSearches.enumerated()),
+                        id: \.element.id
+                    ) { index, city in
                         Button {
                             openCity(city)
                         } label: {
-                            cityRow(city)
+                            CityRowView(city: city)
                         }
                         .buttonStyle(.plain)
 
-                        if city.id != viewModel.recentSearches.last?.id {
+                        if index < viewModel.recentSearches.count - 1 {
                             Divider()
-                                .padding(.leading, 44)
+                                .padding(.leading, 60)
                         }
                     }
                 }
             }
+            .activityPlannerCard()
         }
     }
 
-
     // MARK: - Search Results
 
-    @ViewBuilder
     private var searchResultsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Search results")
                 .font(.headline)
 
-            switch searchViewModel.state {
-            case .idle:
-                EmptyStateView(
-                    message: "Start typing to search for a city."
-                )
+            VStack(spacing: 0) {
+                switch searchViewModel.state {
+                case .idle:
+                    ActivityPlannerEmptyState(
+                        symbol: "magnifyingglass",
+                        title: "Find a destination",
+                        message: "Start typing a city name."
+                    )
 
-            case .loading:
-                ProgressView("Searching cities...")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 24)
+                case .loading:
+                    ProgressView("Finding cities...")
+                        .frame(maxWidth: .infinity)
+                        .padding(35)
 
-            case .results(let cities):
-                VStack(spacing: 0) {
-                    ForEach(cities) { city in
+                case .results(let cities):
+                    ForEach(Array(cities.enumerated()), id: \.element.id) {
+                        index, city in
+
                         Button {
                             openCity(city)
                         } label: {
-                            cityRow(city)
+                            CityRowView(city: city)
                         }
                         .buttonStyle(.plain)
 
-                        if city.id != cities.last?.id {
+                        if index < cities.count - 1 {
                             Divider()
-                                .padding(.leading, 44)
+                                .padding(.leading, 60)
+                        }
+                    }
+
+                case .empty:
+                    ActivityPlannerEmptyState(
+                        symbol: "map",
+                        title: "No cities found",
+                        message: "Try another city or check the spelling."
+                    )
+
+                case .failed(let message):
+                    VStack(spacing: 12) {
+                        ActivityPlannerEmptyState(
+                            symbol: "wifi.exclamationmark",
+                            title: "Something went wrong",
+                            message: message
+                        )
+
+                        Button("Try again") {
+                            searchViewModel.updateQuery(
+                                searchViewModel.query
+                            )
                         }
                     }
                 }
-
-            case .empty:
-                EmptyStateView(
-                    message: "No cities found. Try another search."
-                )
-
-            case .failed(let message):
-                VStack(spacing: 8) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .font(.title2)
-                        .foregroundStyle(.orange)
-
-                    Text(message)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-
-                    Button("Try again") {
-                        searchViewModel.updateQuery(
-                            searchViewModel.query
-                        )
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 24)
             }
+            .activityPlannerCard()
         }
-    }
-
-    // MARK: - City Row
-
-    private func cityRow(_ city: City) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: "mappin.circle.fill")
-                .font(.title2)
-                .foregroundStyle(.blue)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(city.name)
-                    .font(.body)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.primary)
-
-                Text(city.displayName)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-        }
-        .padding(.vertical, 12)
-        .contentShape(Rectangle())
     }
 
     // MARK: - Navigation
@@ -248,20 +203,5 @@ struct HomeView: View {
             searchViewModel.cancelSearch()
             navigationPath.append(city)
         }
-    }
-}
-
-// MARK: - Empty State
-
-private struct EmptyStateView: View {
-
-    let message: String
-
-    var body: some View {
-        Text(message)
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 24)
     }
 }

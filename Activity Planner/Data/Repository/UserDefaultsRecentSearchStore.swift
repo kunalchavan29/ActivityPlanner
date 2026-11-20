@@ -9,7 +9,7 @@ import Foundation
 actor UserDefaultsRecentSearchStore: RecentSearchStoring {
     // MARK: - Properties
     private nonisolated(unsafe) let defaults: UserDefaults
-    private let storageKey = "activitycast.recentSearches"
+    private let storageKey = "activityPlanner.recentSearches"
     private let maximumRecentSearches = 10
 
     // In-memory cache
