@@ -11,15 +11,14 @@ struct ContentView: View {
     let container: AppContainer
 
     var body: some View {
-        CitySearchView(
+        HomeView(
             citySearchService: container.citySearchService,
-            forecastService: container.forecastService
+            forecastService: container.forecastService,
+            recentSearchStore: container.recentSearchStore
         )
     }
 }
 
 #Preview {
-    ContentView(
-        container: AppContainer()
-    )
+    ContentView(container: AppContainer())
 }
