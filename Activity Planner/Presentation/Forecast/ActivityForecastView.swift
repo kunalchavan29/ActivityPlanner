@@ -10,6 +10,7 @@ import SwiftUI
 struct ActivityForecastView: View {
 
     @State private var viewModel: ActivityForecastViewModel
+    @Environment(AppCoordinator.self) var coordinator
 
     init(city: City, forecastService: any ForecastProviding) {
         _viewModel = State(initialValue: ActivityForecastViewModel(city: city, forecastService: forecastService))
@@ -92,11 +93,16 @@ struct ActivityForecastView: View {
                     spacing: 12
                 ) {
                     ForEach(Activity.allCases) { activity in
-                        ActivityScoreCard(
-                            activity: activity,
-                            scores: scores,
-                            forecasts: forecasts
-                        )
+                        Button {
+                            coordinator.showActivityDetails(activity: activity, dailyForecast: forecasts, scores: scores)
+                        } label: {
+                            ActivityScoreCard(
+                                activity: activity,
+                                scores: scores
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .contentShape(Rectangle())
                     }
                 }
 

@@ -10,8 +10,7 @@ struct ActivityScoreCard: View {
 
     let activity: Activity
     let scores: [ActivityScore]
-    let forecasts: [DailyForecast]
-
+    
     private var bestScore: ActivityScore? {
         scores
             .filter { $0.activity == activity }
@@ -19,57 +18,47 @@ struct ActivityScoreCard: View {
     }
 
     var body: some View {
-
-        NavigationLink {
-            ActivityDetailsView(
-                activity: activity,
-                forecasts: forecasts,
-                scores: scores
-            )
-        } label: {
-
-            VStack(alignment: .leading, spacing: 12) {
-
-                HStack {
-                    Image(systemName: activity.symbol)
-                        .font(.title2)
-                        .foregroundStyle(.blue)
-
-                    Spacer()
-
-                    Text(activity.title)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-                }
-
-                if let bestScore {
-
-                    Text("\(bestScore.score)")
-                        .font(.system(size: 34, weight: .bold))
-                        .foregroundStyle(.primary)
-
-                    Text(bestScore.rating.title)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-
-                    Text(bestScore.date.formatted(
-                        date: .abbreviated,
-                        time: .omitted
-                    ))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                } else {
-
-                    Text("No data")
-                        .foregroundStyle(.secondary)
-                }
+        
+        VStack(alignment: .leading, spacing: 12) {
+            
+            HStack {
+                Image(systemName: activity.symbol)
+                    .font(.title2)
+                    .foregroundStyle(.blue)
+                
+                Spacer()
+                
+                Text(activity.title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
-            .background(Color(uiColor: .secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            
+            if let bestScore {
+                
+                Text("\(bestScore.score)")
+                    .font(.system(size: 34, weight: .bold))
+                    .foregroundStyle(.primary)
+                
+                Text(bestScore.rating.title)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                
+                Text(bestScore.date.formatted(
+                    date: .abbreviated,
+                    time: .omitted
+                ))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                
+            } else {
+                
+                Text("No data")
+                    .foregroundStyle(.secondary)
+            }
         }
-        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color(uiColor: .secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }

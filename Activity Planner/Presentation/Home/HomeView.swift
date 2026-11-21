@@ -9,8 +9,8 @@ import SwiftUI
 struct HomeView: View {
 
     @State private var viewModel: HomeViewModel
-    @State private var navigationPath: [City] = []
-
+    @Environment(AppCoordinator.self) private var coordinator
+    
     private let forecastService: any ForecastProviding
 
     init(
@@ -39,45 +39,37 @@ struct HomeView: View {
     }
 
     var body: some View {
-        NavigationStack(path: $navigationPath) {
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 24) {
-                    HomeHeroView()
-
-                    searchBar
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 24) {
+                HomeHeroView()
+                
+                searchBar
+                    .padding(.horizontal, 20)
+                    .padding(.top, -48)
+                    .padding(.bottom, -48)
+                
+                if hasSearchQuery {
+                    searchResultsSection
                         .padding(.horizontal, 20)
-                        .padding(.top, -48)
-                        .padding(.bottom, -48)
-
-                    if hasSearchQuery {
-                        searchResultsSection
-                            .padding(.horizontal, 20)
-                    } else {
-                        recentSearchesSection
-                            .padding(.horizontal, 20)
-
-                        HomeWelcomeView()
-                    }
+                } else {
+                    recentSearchesSection
+                        .padding(.horizontal, 20)
+                    
+                    HomeWelcomeView()
                 }
-                .padding(.bottom, 32)
             }
-            .background(ActivityPlannerStyle.screenBackground)
-            .ignoresSafeArea(edges: .top)
-            .toolbar(.hidden, for: .navigationBar)
-            .navigationDestination(for: City.self) { city in
-                ActivityForecastView(
-                    city: city,
-                    forecastService: forecastService
-                )
-            }
-            .task {
-                await viewModel.loadRecentSearches()
-            }
-            .onDisappear {
-                searchViewModel.cancelSearch()
-            }
+            .padding(.bottom, 32)
         }
+        .background(ActivityPlannerStyle.screenBackground)
+        .ignoresSafeArea(edges: .top)
+        .toolbar(.hidden, for: .navigationBar)
         .tint(ActivityPlannerStyle.accent)
+        .task {
+            await viewModel.loadRecentSearches()
+        }
+        .onDisappear {
+            searchViewModel.cancelSearch()
+        }
     }
 
     // MARK: - Search Bar
@@ -201,7 +193,7 @@ struct HomeView: View {
         Task {
             await viewModel.selectCity(city)
             searchViewModel.cancelSearch()
-            navigationPath.append(city)
+            coordinator.showCity(city)
         }
     }
 }

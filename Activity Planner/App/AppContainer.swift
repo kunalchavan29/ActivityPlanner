@@ -7,7 +7,9 @@
 
 import Foundation
 
-struct AppContainer {
+@MainActor
+@Observable
+final class AppContainer {
 
     let citySearchService: any CitySearching
     let forecastService: any ForecastProviding

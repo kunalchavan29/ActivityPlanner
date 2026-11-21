@@ -9,13 +9,16 @@ import SwiftUI
 
 @main
 struct Activity_PlannerApp: App {
-    private let container = AppContainer()
+    
+    @State private var container = AppContainer()
+    
+    @State private var coordinator = AppCoordinator()
     
     var body: some Scene {
         WindowGroup {
-            ContentView(
-                container: container
-            )
+            ContentView(container: container)
+                .environment(container)
+                .environment(coordinator)
         }
     }
 }

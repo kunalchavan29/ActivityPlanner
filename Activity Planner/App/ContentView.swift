@@ -9,13 +9,20 @@ import SwiftUI
 
 struct ContentView: View {
     let container: AppContainer
+    
+    @Environment(AppCoordinator.self) private var coordinator
 
     var body: some View {
-        HomeView(
-            citySearchService: container.citySearchService,
-            forecastService: container.forecastService,
-            recentSearchStore: container.recentSearchStore
-        )
+        @Bindable var coordinator = coordinator
+        
+        NavigationStack(path: $coordinator.path) {
+            HomeView(
+                citySearchService: container.citySearchService,
+                forecastService: container.forecastService,
+                recentSearchStore: container.recentSearchStore
+            )
+            .withRouteDestinations()
+        }
     }
 }
 
