@@ -41,6 +41,14 @@ The aim is to keep UI, business logic, and data handling separate and maintainab
 - **Forecast caching:** Keeps forecast results in memory for 30 minutes.
 - **Recent searches:** Stores up to 10 cities using UserDefaults and an in-memory copy.
 
+## Trade-offs
+
+- **Layered architecture:** More initial setup, but better separation of responsibilities and testability.
+- **Protocol-based dependencies:** Requires additional abstractions but makes mocking and testing easier.
+- **In-memory forecast cache:** Avoids repeated API calls but does not persist across app launches.
+- **UserDefaults:** Simpler than Core Data for storing a small list of recent searches.
+- **Heuristic scoring:** Easy to understand and test, but does not represent all real-world activity conditions.
+
 ## Testing
 
 XCTest is used to verify business logic, data handling, and ViewModel behaviour.
